@@ -1,0 +1,18 @@
+#include "domain.hpp"
+
+
+
+using namespace LBSIM;
+using namespace memory;
+
+
+template <typename floatType>
+Domain<floatType>::Domain( const int sizeX,
+			   const int sizeY):
+
+  _totalSizeX( sizeX ),
+  _totalSizeY( sizeY )
+{
+
+}
+

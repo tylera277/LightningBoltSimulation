@@ -1,0 +1,4 @@
+
+
+
+add_library(memory STATIC test.cpp domain.hpp cell.hpp)

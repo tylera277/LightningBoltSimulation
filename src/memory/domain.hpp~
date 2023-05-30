@@ -1,0 +1,44 @@
+#ifndef DOMAIN_HPP
+#define DOMAIN_HPP
+
+
+#include <vector>
+
+
+
+
+
+namespace LBSIM
+{
+  namespace memory
+  {
+
+
+    template <typename floatType>
+    class Domain
+    {
+    private:
+      
+      int _totalSizeX, _totalSizeY;
+
+
+    public:
+
+      Domain( const int sizeX,
+	      const int sizeY);
+
+
+      ~Domain( );
+
+      
+    
+    };
+   
+
+  }//namespace memory
+}// namespace LBSIM
+
+
+
+#endif
+  

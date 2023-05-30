@@ -1,0 +1,58 @@
+#ifndef CELL_HPP
+#define CELL_HPP
+
+
+namespace LBSIM
+{
+  namespace memory
+  {
+
+    template <typename floatType>
+    class Cell
+    {
+    private:
+      // Cell position (Cell Number) on the Node
+      int _localX;
+      int _localY;
+
+
+    public:
+      
+      Cell( const int localX,
+	    const int localY):
+
+	_localX( localX ),
+	_localY( localY )
+      {
+      }
+
+      Cell( const Cell<floatType>& c):
+	_localX( c.getX( ) ),
+	_localY( c.getY( ) )
+      {
+      }
+      
+      ~Cell( )
+      {
+	//blah
+      }
+  
+      inline int getX( ) const
+      {
+	return _localX;
+      }
+
+      inline int getY( ) const
+      {
+	return _localY;
+      }
+
+    };
+
+
+  }//namespace memory
+}//namespace LBSIM
+
+
+
+#endif

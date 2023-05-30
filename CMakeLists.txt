@@ -1,0 +1,22 @@
+
+cmake_minimum_required(VERSION 3.21.1)
+project(lightning_bolt)
+
+
+set(CMAKE_CXX_STANDARD 11)
+
+
+include_directories(src)
+include_directories(test)
+
+
+add_executable(lightning_bolt src/main.cpp)
+
+
+add_subdirectory("src/pde_solver")
+add_subdirectory("src/memory")
+
+
+
+target_link_libraries(lightning_bolt PUBLIC pde_solver)
+target_link_libraries(lightning_bolt PUBLIC memory)

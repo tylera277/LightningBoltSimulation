@@ -1,0 +1,21 @@
+// Program which will take in conditions, and return
+// the solution to the pde its trying to solve
+
+// 20 May 2023
+
+
+#include "pde_solver.hpp"
+
+
+#include <cmath>
+#include <vector>
+
+
+std::vector<double> pde_solver(double grid_size,
+			       int grid_section_width,
+			       std::vector<double> boundary_conditions,
+			       std::vector<double> initial_guesses){
+
+
+
+}

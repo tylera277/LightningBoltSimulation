@@ -1,0 +1,68 @@
+
+
+
+#include <vector>
+#include <iostream>
+
+
+#include "memory/domain.hpp"
+//#include "memory/init_domain.hpp"
+#include "memory/cell.hpp"
+
+
+
+using namespace LBSIM;
+
+int main(){
+
+  std::cout << "SHIT" << "\n";
+  
+  /*
+   1.) Set boundary conditions (BC's) and define the grid size, as well
+    as other initial conditions (IC's)
+
+    ->either dot in circle or traditional bolt model
+  */
+  //intialBoardLayout = "dot_in_circle";
+  
+
+  // Initialize a domain where everything will be stored in
+
+  memory::Domain<double> myDomain(10, 10);
+
+  
+ 
+
+  // Start of some kind of loop with a condition
+  // for it finishing at some point
+  
+  /*
+    2.) Input those B.C.'s into a function
+    which solves the Laplace eqn. over the grid of cells
+    specified
+   */
+
+
+  /*
+    3.) Get a list of all of the grid cells that are adjacent
+    to a negative charge (phi=0)
+   */
+
+
+  /*
+    4.) Randomly choose one of these cells as a growth site,
+    with a probability based off of the eqn. in my notes
+   */
+
+
+  /*
+    5.) The chosen cell is set to phi=0 and is treated as part of the 
+    B.C.'s in the next iterations
+   */
+  
+
+
+
+
+
+}

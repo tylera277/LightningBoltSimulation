@@ -1,0 +1,29 @@
+
+
+
+#ifndef PDE_SOLVER_H
+#define PDE_SOLVER_H
+
+
+#include <vector>
+
+
+/* INPUTS:
+   -grid size (assuming equal # each direction) [double],
+   -width of each discretized box [int],
+   -boundary conditions [vector],
+   -initial guesses [vector],
+   .
+   .
+   .
+
+*/
+
+std::vector<double> pde_solver(double,
+			       int,
+			       std::vector<double>,
+			       std::vector<double>);
+
+
+#endif
+			       
