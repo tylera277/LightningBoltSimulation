@@ -7,32 +7,44 @@
 
 #include <vector>
 
+
 #include "../memory/domain.hpp"
+#include "../memory/cell.hpp"
 
 
 namespace LBSIM{
 
-  namespace pde_solver{
+  namespace solver{
 
 
     class PDE_Solver
     {
     private:
-      memory::Domain potDomain;
-      int xTotalRange, yTotalRange;
+      int _xTotalRange, _yTotalRange;
+      memory::Domain _potDomain, _bcPotDomain;
+
 
     public:
 
-      PDE_Solver(memory::Domain, int, int);
+      PDE_Solver(memory::Domain domain, memory::Domain bc_domain,
+		 int xRange, int yRange);
+	
       
-    
-      memory::Domain pde_solver();
+      void pde_solver();
 
-      double potentialTop();
+      double potentialOfCell( int xSpot, int ySpot );
+      
+      double potentialOfBCCell( int xSpot, int ySpot);
+
+      double calculateNewPotentialOfCenter(std::vector<double> potentialArray);
+
+      void setPotentialOfCell(int xSpot, int ySpot, double newPotential);
+
+      void printAllPotentialValues();
     
     };
 
-  }// namespace pde_solver
+  }// namespace solver
 }//  namespace LBSIM
 
 #endif

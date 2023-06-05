@@ -2,6 +2,7 @@
 
 
 #include <vector>
+#include <string>
 #include <iostream>
 
 
@@ -22,7 +23,7 @@ int main(){
 
     ->either dot in circle or traditional bolt model
   */
-  //intialBoardLayout = "dot_in_circle";
+  std::string initialBoardLayout = "dot_in_circle";
   
 
   // Initialize a domain where everything will be stored in
@@ -30,23 +31,50 @@ int main(){
   int xRange = 10;
   int yRange = 10;
   
-  memory::Domain myDomain(xRange, yRange);
+  memory::Domain myDomain(xRange, yRange, -1);
+  memory::Domain bcDomain(xRange, yRange, 10);
 
+  try
+    {
+      bcDomain.initializeDomainToUsersChoice(initialBoardLayout);
+      myDomain.initializeDomainToUsersChoice(initialBoardLayout);
+    }
+  catch( std::exception& e)
+    {
+       std::cout << "Exception occurred: " << e.what() << std::endl;
+       
+       try
+	 {
+	 std::rethrow_exception(std::current_exception());
+	 }
+       catch (const std::exception& innerException)
+	 {
+	   std::cout << "Exception thrown at: " << __FILE__ << ":" << __LINE__ << std::endl;
+	   std::terminate();
+	 }
+       
+    }
+
+       
+    
   myDomain.printPotentialValues();
- 
 
 
   // Main loop
-  int tEnd = 1000;
+  int tEnd = 2;
   int dt = 1;
   
   for(int t=0;t<tEnd; t += dt){
-  
-    myDomain = pde_solver::pde_solver(myDomain,
-				      xRange,
-				      yRange);
-    
-    
+
+
+    solver::PDE_Solver solverInstance(myDomain, bcDomain, xRange, yRange);
+
+    solverInstance.pde_solver();
+
+    solverInstance.printAllPotentialValues();
+
+    std::cout << "-------------" << "\n";
+      
     
   }
   /*

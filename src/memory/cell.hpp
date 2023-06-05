@@ -34,8 +34,11 @@ namespace LBSIM
       // Get the y location       "           "
       int getY( ) ;
 
+      // Set the potential
+      void setPotential(double newPotential);
+      
       // Get the potential        "           "
-      int getPotential();
+      double getPotential();
 
     };
 

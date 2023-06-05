@@ -27,7 +27,13 @@ int memory::Cell::getY()
   return _localY;
 }
 
-int memory::Cell::getPotential()
+void memory::Cell::setPotential(double newPotential)
+{
+  _potentialValue = newPotential;
+}
+
+
+double memory::Cell::getPotential()
 {
   return _potentialValue;
 }

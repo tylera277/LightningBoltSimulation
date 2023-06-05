@@ -25,11 +25,17 @@ namespace LBSIM
 
     public:
 
-      Domain( int, int);
+      Domain( int xRange, int yRange, int initializationValue);
+
+      void initializeDomainToUsersChoice(std::string layoutOfPotentialName);
 
       void printPotentialValues();
       
       int getCellNr(int, int);
+
+      double getPotentialOfCell(int, int);
+
+      void setPotentialOfCell(int xSpot, int ySpot, double newPotential);
 
       
       void addCell(int);
