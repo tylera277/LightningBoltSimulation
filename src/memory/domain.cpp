@@ -35,26 +35,23 @@ memory::Domain::Domain(int sizeX, int sizeY, int initializationValue):
 
 void memory::Domain::initializeDomainToUsersChoice(std::string layoutOfPotentialName){
   
-  if(layoutOfPotentialName == "dot_in_circle")
+  if(layoutOfPotentialName == "traditional_lightning_model")
     {
 
-      int halfwayWidth = int( (_totalSizeX) / 2 );
-      (_cellMatrix.at(halfwayWidth+_totalSizeX)).setPotential(0);
-      (_cellMatrix.at(halfwayWidth + (2*_totalSizeX))).setPotential(0);
-      (_cellMatrix.at(halfwayWidth + ( 3 * (_totalSizeX) ) ) ).setPotential(0);
+      int halfwayWidth = int( (_totalSizeX+2) / 2 );
+      (_cellMatrix.at(halfwayWidth + (_totalSizeX+2))).setPotential(0);
+      (_cellMatrix.at(halfwayWidth + (2*(_totalSizeX+2)))).setPotential(0);
+      (_cellMatrix.at(halfwayWidth + ( 3 * (_totalSizeX+2) ) ) ).setPotential(0);
 
 
-      for(int i = 1 ; i < (_totalSizeX) ; i++)
+      for(int i = 1 ; i < (_totalSizeX+1) ; i++)
 	{
-	  (_cellMatrix.at(i+ ( (_totalSizeY-1) * _totalSizeX ) )).setPotential(1);
+	  (_cellMatrix.at( i + ( (_totalSizeX+2)*_totalSizeY ) )).setPotential(1);
 	}
-      
-      
-	
-      
 
+      
     }
-  else if (layoutOfPotentialName == "traditional_lightning_model")
+  else if (layoutOfPotentialName == "circle_in_dot_model")
     {
 
 
@@ -74,9 +71,10 @@ void memory::Domain::printPotentialValues()
 {
 
   int cellNr;
-  
-  for( int y=0; y<(_totalSizeY+1); y++){
-    for( int x=0; x<(_totalSizeX+1); x++){
+
+  /*
+  for( int y=0; y<(_totalSizeY+2); y++){
+    for( int x=0; x<(_totalSizeX+2); x++){
 
       cellNr = ((y * _totalSizeX )+ x);
       
@@ -84,7 +82,20 @@ void memory::Domain::printPotentialValues()
     }
     std::cout << "\n";
   }
-   
+  */
+
+  for(int i=0;i<((_totalSizeX+2) * (_totalSizeY+2));i++)
+    {
+
+      if((i%12)==0 && i!=0)
+	{
+	  std::cout << "\n";
+	}
+      std::cout << (_cellMatrix.at(i ) ).getPotential() << " : ";
+
+    }
+  std::cout << "\n";
+
   
 }
 
@@ -93,13 +104,18 @@ void memory::Domain::printPotentialValues()
 int memory::Domain::getCellNr( int locationX, int locationY )
 {
 
+  /*
+   Input the x and y location of the cell youre interested in,
+   output the number that that component is in the domains vector space
+  */
+
   int cellNr = 0;
   
   if(locationY > 0)
     {
-  cellNr = (locationY-1) * _totalSizeX;
+      cellNr = (locationY) * (_totalSizeX+2);
 
-  cellNr += locationX;
+      cellNr += locationX;
 
     }
   else if(locationY == 0)
@@ -110,7 +126,6 @@ int memory::Domain::getCellNr( int locationX, int locationY )
   else
     {
       throw std::range_error("Tried to get cell number of a cell outside scope of potential domain array!");
-
     }
 
   return cellNr;

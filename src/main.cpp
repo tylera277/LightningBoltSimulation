@@ -23,13 +23,13 @@ int main(){
 
     ->either dot in circle or traditional bolt model
   */
-  std::string initialBoardLayout = "dot_in_circle";
+  std::string initialBoardLayout = "traditional_lightning_model";
   
 
   // Initialize a domain where everything will be stored in
 
-  int xRange = 10;
-  int yRange = 10;
+  int xRange = 100;
+  int yRange = 100;
   
   memory::Domain myDomain(xRange, yRange, -1);
   memory::Domain bcDomain(xRange, yRange, 10);
@@ -57,38 +57,46 @@ int main(){
 
        
     
-  myDomain.printPotentialValues();
+  //bcDomain.printPotentialValues();
 
 
   // Main loop
-  int tEnd = 2;
+  int tEnd = 10;
   int dt = 1;
+  double eta=1.0;
+
+  // File where I will be outputting the values to, in order to be
+  // later plotted using a python script
+  std::string output_file = "../src/outputData/10jun2023_data.csv";
+
+
+  std::vector<memory::Cell> adjacentCells;
   
-  for(int t=0;t<tEnd; t += dt){
+  solver::PDE_Solver solverInstance(myDomain, bcDomain, xRange, yRange);
+
+  for(int t=0;t<tEnd; t += dt)
+    {
+
+      solverInstance.pde_solver();
+
+      //solverInstance.printAllPotentialValuesTerminal();
 
 
-    solver::PDE_Solver solverInstance(myDomain, bcDomain, xRange, yRange);
+      adjacentCells = solverInstance.cellAdjacentToNegativeCharges();
 
-    solverInstance.pde_solver();
+      solverInstance.pickRandomCell(adjacentCells, eta);
 
-    solverInstance.printAllPotentialValues();
+      if(t != (tEnd-1))
+	{
+	  solverInstance.resetPotentialCells();
+	}
+     
+    }
+  
 
-    std::cout << "-------------" << "\n";
-      
-    
-  }
-  /*
-    2.) Input those B.C.'s into a function
-    which solves the Laplace eqn. over the grid of cells
-    specified
-   */
+  solverInstance.printAllPotentialValuesCSV(0, output_file);
 
-
-  /*
-    3.) Get a list of all of the grid cells that are adjacent
-    to a negative charge (phi=0)
-   */
-
+  
 
   /*
     4.) Randomly choose one of these cells as a growth site,
