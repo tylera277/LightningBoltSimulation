@@ -84,6 +84,13 @@ namespace LBSIM{
 				  double eta);
 
 
+      bool checkIfInListAlready(std::vector<memory::Cell> listOfCells,
+				int xPositionInQuestion,
+				int yPositionInQuestion);
+
+      
+      
+
       void resetPotentialCells();
       
 

@@ -25,7 +25,7 @@ namespace LBSIM
 
     public:
 
-      Domain( int xRange, int yRange, int initializationValue);
+      Domain( int xRange, int yRange, double initializationValue);
 
       void initializeDomainToUsersChoice(std::string layoutOfPotentialName);
 

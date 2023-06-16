@@ -23,9 +23,6 @@ y_size = 100
 new_pot_data_numpy = (new_pot_data.to_numpy())
 new_pot_data_numpy = new_pot_data_numpy[0:(5*y_size)+y_size, 0:(x_size)].astype(float)
 
-beepers = np.array(([1, 2],
-                    [5, 3]))
-#print("MEEP?:", beepers[0,1])
 
 
 print(new_pot_data_numpy)

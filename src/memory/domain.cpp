@@ -11,7 +11,7 @@ using namespace LBSIM;
 
 
 
-memory::Domain::Domain(int sizeX, int sizeY, int initializationValue):
+memory::Domain::Domain(int sizeX, int sizeY, double initializationValue):
   
   _totalSizeX(sizeX),
   _totalSizeY(sizeY)

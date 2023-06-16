@@ -28,10 +28,10 @@ int main(){
 
   // Initialize a domain where everything will be stored in
 
-  int xRange = 100;
-  int yRange = 100;
+  int xRange = 50;
+  int yRange = 50;
   
-  memory::Domain myDomain(xRange, yRange, -1);
+  memory::Domain myDomain(xRange, yRange, 0);
   memory::Domain bcDomain(xRange, yRange, 10);
 
   try
@@ -57,11 +57,11 @@ int main(){
 
        
     
-  //bcDomain.printPotentialValues();
+  bcDomain.printPotentialValues();
 
 
   // Main loop
-  int tEnd = 10;
+  int tEnd = 150;
   int dt = 1;
   double eta=1.0;
 
@@ -74,7 +74,7 @@ int main(){
   
   solver::PDE_Solver solverInstance(myDomain, bcDomain, xRange, yRange);
 
-  for(int t=0;t<tEnd; t += dt)
+  for(int t=0; t<tEnd; t += dt)
     {
 
       solverInstance.pde_solver();
@@ -87,9 +87,9 @@ int main(){
       solverInstance.pickRandomCell(adjacentCells, eta);
 
       if(t != (tEnd-1))
-	{
-	  solverInstance.resetPotentialCells();
-	}
+      {
+      solverInstance.resetPotentialCells();
+      }
      
     }
   
