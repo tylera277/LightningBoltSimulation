@@ -7,15 +7,16 @@ set(CMAKE_CXX_STANDARD 11)
 
 
 include_directories(src)
-include_directories(test)
 
+enable_testing()
 
-add_executable(lightning_bolt src/main.cpp)
+add_executable(lightning_bolt src/main.cpp )
 
 
 add_subdirectory("src/pde_solver")
 add_subdirectory("src/memory")
 
+add_subdirectory(test)
 
 
 target_link_libraries(lightning_bolt PUBLIC pde_solver)

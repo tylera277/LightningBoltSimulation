@@ -1,0 +1,5 @@
+*.o
+*.~
+build/*
+*.csv
+*.DS_Store

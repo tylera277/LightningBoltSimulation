@@ -42,12 +42,15 @@ void memory::Domain::initializeDomainToUsersChoice(std::string layoutOfPotential
       (_cellMatrix.at(halfwayWidth + (_totalSizeX+2))).setPotential(0);
       (_cellMatrix.at(halfwayWidth + (2*(_totalSizeX+2)))).setPotential(0);
       (_cellMatrix.at(halfwayWidth + ( 3 * (_totalSizeX+2) ) ) ).setPotential(0);
+      (_cellMatrix.at(halfwayWidth + ( 4 * (_totalSizeX+2) ) ) ).setPotential(0);
+      (_cellMatrix.at(halfwayWidth + ( 5 * (_totalSizeX+2) ) ) ).setPotential(0);
 
 
       for(int i = 1 ; i < (_totalSizeX+1) ; i++)
-	{
-	  (_cellMatrix.at( i + ( (_totalSizeX+2)*_totalSizeY ) )).setPotential(1);
-	}
+	      {
+	        (_cellMatrix.at( i + ( (_totalSizeX+2)*_totalSizeY ) )).setPotential(100);
+
+	      }
 
       
     }

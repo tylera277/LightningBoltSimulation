@@ -1,4 +1,4 @@
-
+// Program which has the goal of simulating a lightning bolt
 
 
 #include <vector>
@@ -6,6 +6,7 @@
 #include <iostream>
 
 
+#include "simulation_defines.hpp"
 #include "memory/domain.hpp"
 #include "memory/cell.hpp"
 #include "pde_solver/pde_solver.hpp"
@@ -17,27 +18,18 @@ using namespace LBSIM;
 
 int main(){
   
-  /*
-   1.) Set boundary conditions (BC's) and define the grid size, as well
-    as other initial conditions (IC's)
-
-    ->either dot in circle or traditional bolt model
-  */
-  std::string initialBoardLayout = "traditional_lightning_model";
   
-
-  // Initialize a domain where everything will be stored in
-
-  int xRange = 50;
-  int yRange = 50;
-  
-  memory::Domain myDomain(xRange, yRange, 0);
-  memory::Domain bcDomain(xRange, yRange, 10);
+  // Initializing the domains that will be used in the simulation
+  //  - myDomain : storing calculated potential values
+  //  - bcDomain : storing the boundary conditions 
+  //             (the 10 value for BC is important for my program atm)                  
+  memory::Domain myDomain(simParams::xTotalCells, simParams::yTotalCells, 0);
+  memory::Domain bcDomain(simParams::xTotalCells, simParams::yTotalCells, 10);
 
   try
     {
-      bcDomain.initializeDomainToUsersChoice(initialBoardLayout);
-      myDomain.initializeDomainToUsersChoice(initialBoardLayout);
+      bcDomain.initializeDomainToUsersChoice(simParams::initialBoardLayout);
+      myDomain.initializeDomainToUsersChoice(simParams::initialBoardLayout);
     }
   catch( std::exception& e)
     {
@@ -57,36 +49,28 @@ int main(){
 
        
     
-  bcDomain.printPotentialValues();
+  //bcDomain.printPotentialValues();
 
 
   // Main loop
-  int tEnd = 150;
-  int dt = 1;
-  double eta=1.0;
-
-  // File where I will be outputting the values to, in order to be
-  // later plotted using a python script
-  std::string output_file = "../src/outputData/10jun2023_data.csv";
 
 
   std::vector<memory::Cell> adjacentCells;
   
-  solver::PDE_Solver solverInstance(myDomain, bcDomain, xRange, yRange);
+  solver::PDE_Solver solverInstance(myDomain, bcDomain, simParams::xTotalCells, simParams::yTotalCells);
 
-  for(int t=0; t<tEnd; t += dt)
+
+  for(int t = simParams::simulationStartingPoint; t < simParams::simulationLength; 
+  t += simParams::simulationIncrement)
     {
 
       solverInstance.pde_solver();
 
-      //solverInstance.printAllPotentialValuesTerminal();
-
-
       adjacentCells = solverInstance.cellAdjacentToNegativeCharges();
 
-      solverInstance.pickRandomCell(adjacentCells, eta);
+      solverInstance.pickRandomCell(adjacentCells, simParams::eta);
 
-      if(t != (tEnd-1))
+      if(t != (simParams::simulationLength-1))
       {
       solverInstance.resetPotentialCells();
       }
@@ -94,24 +78,8 @@ int main(){
     }
   
 
-  solverInstance.printAllPotentialValuesCSV(0, output_file);
+  solverInstance.printAllPotentialValuesCSV(0, simParams::outputFile);
+
 
   
-
-  /*
-    4.) Randomly choose one of these cells as a growth site,
-    with a probability based off of the eqn. in my notes
-   */
-
-
-  /*
-    5.) The chosen cell is set to phi=0 and is treated as part of the 
-    B.C.'s in the next iterations
-   */
-  
-
-
-
-
-
 }
