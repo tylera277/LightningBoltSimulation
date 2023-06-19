@@ -17,8 +17,8 @@ new_pot_data = potential_data.dropna()
 
 print(potential_data.head())
 
-x_size = 100
-y_size = 100
+x_size = 50
+y_size = 50
 
 new_pot_data_numpy = (new_pot_data.to_numpy())
 new_pot_data_numpy = new_pot_data_numpy[0:(5*y_size)+y_size, 0:(x_size)].astype(float)

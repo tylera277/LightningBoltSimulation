@@ -149,6 +149,14 @@ namespace LBSIM{
       void printAllPotentialValuesCSV(double currentTimeInterval, std::string file_name);
 
 
+      /**
+      * @brief Detecting if the bolt has reached the bottom B.C.'s(ground)
+      * @return A boolean value which says if its reached it or not
+      * (0 if it hasnt, 1 if it has)
+      *
+      * Inserts a newly calculated potential value in the BC grid
+      */ 
+      bool detectIfFinished();
       
       
     

@@ -17,6 +17,7 @@
 #include "pde_solver.hpp"
 #include "../memory/cell.hpp"
 #include "../memory/domain.hpp"
+#include "../simulation_defines.hpp"
 
 
 using namespace LBSIM;
@@ -49,9 +50,9 @@ void solver::PDE_Solver::pde_solver(){
   double potentialCenter, newPotentialCenter;
   double potentialTop, potentialBot, potentialLeft, potentialRight;
   
-  while(delta > 0.005){
- 
-    //std::cout << "DELTA: " << delta << "\n";
+  while(delta > simParams::ceaseCondition){
+    delta = 0;
+    
     for(int y=1; y<(_yTotalRange+1); y++){
       for(int x=1; x<(_xTotalRange+1); x++){
 
@@ -67,11 +68,11 @@ void solver::PDE_Solver::pde_solver(){
 	    try
 	      {
 		
-		potentialCenter = this-> potentialOfCell (x, y);
-		potentialTop = this-> potentialOfCell   ( x , y-1 );
-		potentialBot = this-> potentialOfCell   ( x , y+1 );
-		potentialLeft = this-> potentialOfCell  ( x-1, y);
-		potentialRight = this-> potentialOfCell ( x+1, y);
+		    potentialCenter = this-> potentialOfCell (x, y);
+		    potentialTop = this-> potentialOfCell   ( x , y-1 );
+		    potentialBot = this-> potentialOfCell   ( x , y+1 );
+		    potentialLeft = this-> potentialOfCell  ( x-1, y);
+		    potentialRight = this-> potentialOfCell ( x+1, y);
 		
 	      }
 	    catch(const std::exception& e)
@@ -97,15 +98,16 @@ void solver::PDE_Solver::pde_solver(){
 	    
 	    this->setPotentialOfCell( x, y, newPotentialCenter);
 	    delta += std::abs(potentialCenter - newPotentialCenter);
-	    //std::cout << "DEL:" <<std::abs(potentialCenter - newPotentialCenter) << "\n";
+	    
 	      
 	  }
 	
       }
     }
+    //std::cout << "pre DEL:" << delta << "\n";
     delta /= ( (_xTotalRange+2) * (_yTotalRange+2) );
-
-
+    //std::cout << "postDEL:" << delta << "\n";
+    //std::cout << "------------" << "\n";
   }
 
 }
@@ -180,12 +182,11 @@ std::vector< memory::Cell > solver::PDE_Solver::cellAdjacentToNegativeCharges()
     {
     for( int x=2; x<(_xTotalRange); x++)
       {
-	potential = this->potentialOfBCCell(x,y);
+	     potential = this->potentialOfBCCell(x,y);
 
 	    if(potential==0)
 	      {
-	    //std::cout << "POT: " << x << ", "<<y<<"\n";
-
+	    
 	    for(int i=-1 ; i<2 ; i++)
 	      {
 		    for(int j=-1 ; j<2; j++)
@@ -207,8 +208,6 @@ std::vector< memory::Cell > solver::PDE_Solver::cellAdjacentToNegativeCharges()
 		        continue;
 		      }
 
-		    
-		    //std::cout <<"HALP: " <<  x+i<<","<< y+j<<", "<< std::abs(calculatedPotential) << "\n";
 		    memory::Cell c( x+i, y+j, std::abs(calculatedPotential));
 		    adjacentCells.push_back(c);
 		    
@@ -222,16 +221,6 @@ std::vector< memory::Cell > solver::PDE_Solver::cellAdjacentToNegativeCharges()
      
       }
     }
-
-/*  
-for(int k=0; k < adjacentCells.size(); k++)
-  {
-		std::cout << "LISTERINO?:" << (adjacentCells.at(k)).getX() <<
-		  ", " << (adjacentCells.at(k)).getY() << "\n";
-		    
-  }
- std::cout << "-------- \n";
-*/
   
   return adjacentCells;
 }
@@ -249,14 +238,10 @@ bool solver::PDE_Solver::checkIfInListAlready(std::vector<memory::Cell> listOfCe
       yInList = ( listOfCells.at(i) ).getY();
 
 
-      
-      
       if((xInList == xPosition) && (yInList == yPosition))
-	{
-	  //std::cout << "LISTERINO-> XPOS:" << xInList << "; YPOS: " <<
-	  // 	yInList<< "\n";
-	  return true;
-	}
+	    {
+	      return true;
+	    }
 
     }
   return false;
@@ -279,12 +264,12 @@ void solver::PDE_Solver::pickRandomCell(std::vector< memory::Cell > adjacentCell
     for( int num=0; num<lengthOfAdjacentCells; num++ )
       {
 	      totalPotential += (std::pow(std::abs((adjacentCells.at(num)).getPotential()), eta));
-	    //std::cout << "SUSPECT-> XPOS:" << adjacentCells.at(num).getX() << "; YPOS: " <<
-	    //(adjacentCells.at(num)).getY() << "\n";
+	    
       }
 
 
-      std::cout<<"totalPotential:" << totalPotential<< "\n";
+      std::cout<<"totalPotentialAdjacentCells:" << totalPotential<< "\n";
+
     // A real skunkworks attempt at developing something to select numbers
     // based off of a certain probability distribution
     randomInteger = std::rand() % 100;
@@ -304,13 +289,13 @@ void solver::PDE_Solver::pickRandomCell(std::vector< memory::Cell > adjacentCell
 
 	   
 	          this->setPotentialOfBCCell(adjacentCells.at(num).getX(),
-				      adjacentCells.at(num).getY(),
-				      0);
+				    adjacentCells.at(num).getY(),
+				    0);
 
-	    //std::cout << "SUSPECT-> XPOS:" << adjacentCells.at(num).getX() << "; YPOS: " <<
-	      //(adjacentCells.at(num)).getY() << "\n";
-	    break;
-	  }
+	          //std::cout << "SUSPECT-> XPOS:" << adjacentCells.at(num).getX() << "; YPOS: " <<
+	          //(adjacentCells.at(num)).getY() << "\n";
+	          break;
+	        }
 	
 	prevNum += currentNum;
 	
@@ -342,6 +327,30 @@ void solver::PDE_Solver::resetPotentialCells()
   
 
 }
+
+
+bool solver::PDE_Solver::detectIfFinished()
+{
+  for(int i=1 ; i<(_xTotalRange+1) ; i++)
+  {
+    double bc_potential = this->potentialOfBCCell(i, _yTotalRange+1);
+
+    if(bc_potential != 10)
+    { 
+      return true;
+    }
+  }
+  return false;
+
+}
+
+
+
+
+
+
+
+
 
 
 
