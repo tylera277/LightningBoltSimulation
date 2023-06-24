@@ -13,6 +13,8 @@
 #include <fstream>
 #include <exception>
 #include <cstdlib>
+#include <algorithm>
+#include <random>
 
 #include "pde_solver.hpp"
 #include "../memory/cell.hpp"
@@ -27,11 +29,15 @@ using namespace LBSIM;
 solver::PDE_Solver::PDE_Solver(memory::Domain domain,
 			       memory::Domain bc_domain,
 			       int xRange,
-			       int yRange):
+			       int yRange,
+             std::string outputPotFile,
+             std::string outputBCFile):
   _bcPotDomain(bc_domain),
   _potDomain(domain),
   _xTotalRange(xRange),
-  _yTotalRange(yRange){
+  _yTotalRange(yRange),
+  _outputPotFile(outputPotFile),
+  _outputBCFile(outputBCFile){
 
   // implementation detail of constructor section if needed
   
@@ -123,6 +129,14 @@ double solver::PDE_Solver::potentialOfCell(int xSpot, int ySpot)
   return potentialOfCell;
 }
 
+double solver::PDE_Solver::potentialOfBCCell(int xSpot, int ySpot)
+{
+  double potentialOfBCCell = _bcPotDomain.getPotentialOfCell(xSpot, ySpot);
+
+  return potentialOfBCCell;
+
+}
+
 
 
 void solver::PDE_Solver::setPotentialOfCell(int xSpot, int ySpot, double newPotential)
@@ -134,16 +148,6 @@ void solver::PDE_Solver::setPotentialOfCell(int xSpot, int ySpot, double newPote
 void solver::PDE_Solver::setPotentialOfBCCell(int xSpot, int ySpot, double newPotential)
 {
   _bcPotDomain.setPotentialOfCell(xSpot, ySpot, newPotential);
-
-}
-
-
-
-double solver::PDE_Solver::potentialOfBCCell(int xSpot, int ySpot)
-{
-  double potentialOfBCCell = _bcPotDomain.getPotentialOfCell(xSpot, ySpot);
-
-  return potentialOfBCCell;
 
 }
 
@@ -194,7 +198,7 @@ std::vector< memory::Cell > solver::PDE_Solver::cellAdjacentToNegativeCharges()
 		    
 		    if(i==0 && j==0)
 		      {
-			continue;
+			      continue;
 		      }
 		    
 		    checkPotential = this->potentialOfBCCell( x+i , y+j );
@@ -256,10 +260,11 @@ void solver::PDE_Solver::pickRandomCell(std::vector< memory::Cell > adjacentCell
 {
 
   int lengthOfAdjacentCells = adjacentCells.size();
-  int randomInteger;
+  double randomInteger;
   double totalPotential = 0;
   srand ( time(NULL) );
-
+  
+  std::random_shuffle(adjacentCells.begin(), adjacentCells.end());
   
     for( int num=0; num<lengthOfAdjacentCells; num++ )
       {
@@ -268,7 +273,7 @@ void solver::PDE_Solver::pickRandomCell(std::vector< memory::Cell > adjacentCell
       }
 
 
-      std::cout<<"totalPotentialAdjacentCells:" << totalPotential<< "\n";
+      //std::cout<<"totalPotentialAdjacentCells:" << totalPotential<< "\n";
 
     // A real skunkworks attempt at developing something to select numbers
     // based off of a certain probability distribution
@@ -279,25 +284,35 @@ void solver::PDE_Solver::pickRandomCell(std::vector< memory::Cell > adjacentCell
     
     for( int num=0; num<lengthOfAdjacentCells; num++ )
       {
-	      double currentNum = (((adjacentCells.at(num)).getPotential())/totalPotential)*100;
+	      double currentNum = (std::pow((adjacentCells.at(num)).getPotential(),eta) \
+        /totalPotential)*100;
 	
-	      //std::cout<<"CURRNUM:" << (((adjacentCells.at(num)).getPotential())) << "\n";
+	      //std::cout<<"CURRNUM:" << currentNum << "\n";
+        
 
-	
 	      if(( randomInteger >= prevNum ) && (randomInteger < (prevNum+currentNum) ))
 	        {
 
 	   
 	          this->setPotentialOfBCCell(adjacentCells.at(num).getX(),
-				    adjacentCells.at(num).getY(),
-				    0);
+				    adjacentCells.at(num).getY(), 0);
+
+            
+            this->setPotentialOfCell(adjacentCells.at(num).getX(),
+				    adjacentCells.at(num).getY(), 0);
+
+
+
+            //std::cout << "X_pot: " << adjacentCells.at(num).getX() << ", Y_pot: " << \
+            //adjacentCells.at(num).getY() << ", Pot: " << \
+            //this->potentialOfCell(adjacentCells.at(num).getX(), adjacentCells.at(num).getY())<<"\n";
 
 	          //std::cout << "SUSPECT-> XPOS:" << adjacentCells.at(num).getX() << "; YPOS: " <<
 	          //(adjacentCells.at(num)).getY() << "\n";
 	          break;
 	        }
 	
-	prevNum += currentNum;
+	      prevNum += currentNum;
 	
       }
 
@@ -319,7 +334,14 @@ void solver::PDE_Solver::resetPotentialCells()
 	    }
 	  else
 	    {
-	      this->setPotentialOfCell(x,y,0);
+        if(x==(_xTotalRange+1))
+        {
+          this->setPotentialOfCell(x,y,1);
+        }
+	      else
+        {
+          this->setPotentialOfCell(x,y,0);
+        }
 	    }
 	      
 	}
@@ -333,7 +355,7 @@ bool solver::PDE_Solver::detectIfFinished()
 {
   for(int i=1 ; i<(_xTotalRange+1) ; i++)
   {
-    double bc_potential = this->potentialOfBCCell(i, _yTotalRange+1);
+    double bc_potential = this->potentialOfBCCell(i, _yTotalRange);
 
     if(bc_potential != 10)
     { 
@@ -361,23 +383,25 @@ bool solver::PDE_Solver::detectIfFinished()
 void solver::PDE_Solver::printAllPotentialValuesTerminal()
 {
   double potential;
-  
+  double totalPotential = 0;
+
   for( int y=1; y<(_yTotalRange+1); y++)
     {
     for( int x=1; x<(_xTotalRange+1); x++)
       {
       
-	potential = this->potentialOfBCCell(x,y);
-      std::cout << potential << " : ";
+	    potential = this->potentialOfCell(x,y);
+      totalPotential += potential;
     }
-    std::cout << "\n";
+    
   }
-  
+  std::cout << "TotalPotential: " << totalPotential << " \n ";
+
 
 }
 
 
-void solver::PDE_Solver::printAllPotentialValuesCSV(double currentTime, std::string filename)
+void solver::PDE_Solver::printAllPotentialValuesCSV(double currentTime)
 {
 
   std::ofstream angles;
@@ -386,14 +410,50 @@ void solver::PDE_Solver::printAllPotentialValuesCSV(double currentTime, std::str
   // if it is, overwrite the data currently in the csv file
   if ( currentTime == 0 )
     {
-      angles.open(filename);
+      angles.open(_outputPotFile);
     }
   else if(currentTime != 0)
     {
-      angles.open(filename, std::ios::app);
+      angles.open(_outputPotFile, std::ios::app);
     }
   double potential;
+
+  for( int y=1; y<(_yTotalRange+1); y++)
+    {
+    for( int x=1; x<(_xTotalRange+1); x++)
+      {
+      
+      potential = this->potentialOfCell( x , y );
+      angles << potential << " , ";
+      }
+    angles << "\n";
+    }
+  angles << "\n";
   
+      
+  
+  angles.close();
+  
+
+}
+
+
+void solver::PDE_Solver::printAllBoundaryConditionValuesCSV(double currentTime)
+{
+
+  std::ofstream angles;
+
+  // Using this check to see if this is the start of the simulation,
+  // if it is, overwrite the data currently in the csv file
+  if ( currentTime == 0 )
+    {
+      angles.open(_outputBCFile);
+    }
+  else if(currentTime != 0)
+    {
+      angles.open(_outputBCFile, std::ios::app);
+    }
+  double potential;
 
   for( int y=1; y<(_yTotalRange+1); y++)
     {
@@ -406,10 +466,12 @@ void solver::PDE_Solver::printAllPotentialValuesCSV(double currentTime, std::str
     angles << "\n";
     }
   angles << "\n";
- 
+  
       
   
   angles.close();
   
 
 }
+
+

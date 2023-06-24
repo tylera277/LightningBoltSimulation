@@ -48,7 +48,7 @@ void memory::Domain::initializeDomainToUsersChoice(std::string layoutOfPotential
 
       for(int i = 1 ; i < (_totalSizeX+1) ; i++)
 	      {
-	        (_cellMatrix.at( i + ( (_totalSizeX+2)*_totalSizeY ) )).setPotential(10);
+	        (_cellMatrix.at( i + ( (_totalSizeX+2)*_totalSizeY ) )).setPotential(1);
 
 	      }
 

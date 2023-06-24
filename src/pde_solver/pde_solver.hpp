@@ -10,6 +10,7 @@
 
 
 #include <vector>
+#include <string>
 
 #include "../memory/domain.hpp"
 #include "../memory/cell.hpp"
@@ -25,13 +26,15 @@ namespace LBSIM{
     private:
       int _xTotalRange, _yTotalRange;
       memory::Domain _potDomain, _bcPotDomain;
+      std::string _outputPotFile, _outputBCFile;
 
 
     public:
 
       // Constructor
       PDE_Solver(memory::Domain domain, memory::Domain bc_domain,
-		 int xRange, int yRange);
+		 int xRange, int yRange, 
+     std::string outputPotentialFile, std::string outputBCFile);
       
       
 
@@ -142,11 +145,19 @@ namespace LBSIM{
 
 
       /*
-	Used for printing potential values out to a csv file using a name
-	the user specifies, as well as if the simulation just started or has
-	been running
+	    Used for printing potential values out to a csv file using a name
+	    the user specifies, as well as if the simulation just started or has
+	    been running
       */
-      void printAllPotentialValuesCSV(double currentTimeInterval, std::string file_name);
+      void printAllPotentialValuesCSV(double currentTimeInterval);
+
+
+      /*
+	    Used for printing boundary condition values out to a csv file using a name
+	    the user specifies, as well as if the simulation just started or has
+	    been running
+      */
+      void printAllBoundaryConditionValuesCSV(double currentTimeInterval);
 
 
       /**

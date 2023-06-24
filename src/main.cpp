@@ -56,16 +56,38 @@ int main(){
 
   std::vector<memory::Cell> adjacentCells;
   
-  solver::PDE_Solver solverInstance(myDomain, bcDomain, simParams::xTotalCells, simParams::yTotalCells);
+  solver::PDE_Solver solverInstance(myDomain, bcDomain, simParams::xTotalCells, simParams::yTotalCells,
+  simParams::outputPotentialFile, simParams::outputBCFile);
 
   auto checkPoint1 = std::chrono::steady_clock::now();
 
-  for(int t = simParams::simulationStartingPoint; t < simParams::simulationLength; 
-      t += simParams::simulationIncrement)
+  
+
+  for(int t = simParams::simulationStartingPoint; t < simParams::simulationLength;
+   t += simParams::simulationIncrement)
     {
+      std::cout << "TIME: " << t << "\n";  
+      if(t==int((simParams::simulationLength)/4))
+      { 
+        //std::cout <<"HAPPENED!\n";
+        solverInstance.printAllPotentialValuesCSV(0);
+        solverInstance.printAllBoundaryConditionValuesCSV(0);
+
+      }
+      if(t==int((simParams::simulationLength)/2))
+      {
+        solverInstance.printAllPotentialValuesCSV(1);
+        solverInstance.printAllBoundaryConditionValuesCSV(1);
+      }
+      if(t==int((3*(simParams::simulationLength))/4))
+      {
+        solverInstance.printAllPotentialValuesCSV(2);
+        solverInstance.printAllBoundaryConditionValuesCSV(2);
+      }
+      
+
 
       auto inLoopTime1 = std::chrono::steady_clock::now();
-
 
       solverInstance.pde_solver();
 
@@ -78,22 +100,28 @@ int main(){
       solverInstance.pickRandomCell(adjacentCells, simParams::eta);
      
 
-      //if( solverInstance.detectIfFinished() == true)
-      //{
-       // std::cout << "Simulation has finished!\n";
-       // break;
-      //}
+      // This is printing out the total potential thats spread
+      // out in all of the cells; I think it should be relatively constant
+      // throughout the entire simulation
+      //solverInstance.printAllPotentialValuesTerminal();
 
+      /* 
+      if( solverInstance.detectIfFinished() )
+      {
+        std::cout << "Simulation has finished!\n";
+        break;
+      }
+      */
 
       auto inLoopTime3 = std::chrono::steady_clock::now();
 
-      std::cout << "Section 1: " << std::chrono::duration_cast<std::chrono::milliseconds>(inLoopTime2 - inLoopTime1).count() << "ms" << std::endl;
-      std::cout << "Section 2: " << std::chrono::duration_cast<std::chrono::milliseconds>(inLoopTime3 - inLoopTime2).count() << "ms" << std::endl;
+      //std::cout << "Section 1: " << std::chrono::duration_cast<std::chrono::milliseconds>(inLoopTime2 - inLoopTime1).count() << "ms" << std::endl;
+      //std::cout << "Section 2: " << std::chrono::duration_cast<std::chrono::milliseconds>(inLoopTime3 - inLoopTime2).count() << "ms" << std::endl;
     }
   
   // Prints final values out to a specified csv file.
-  solverInstance.printAllPotentialValuesCSV(0, simParams::outputFile);
-
+  solverInstance.printAllPotentialValuesCSV(3);
+  solverInstance.printAllBoundaryConditionValuesCSV(3);
 
   
 }
