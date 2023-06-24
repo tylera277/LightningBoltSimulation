@@ -1,0 +1,6 @@
+[user]
+    name = tylera277
+    email = tyler.e.allen@Protonmail.com
+
+[credential]
+    helper = store --file ~/.git_credentials
