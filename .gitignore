@@ -4,3 +4,4 @@ build/*
 *.csv
 *.DS_Store
 .git_credentials
+spdlog

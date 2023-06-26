@@ -6,6 +6,8 @@
 #include "domain.hpp"
 #include "cell.hpp"
 
+#include "../../spdlog/spdlog.h"
+#include "../../spdlog/sinks/basic_file_sink.h"
 
 using namespace LBSIM;
 
@@ -61,7 +63,8 @@ void memory::Domain::initializeDomainToUsersChoice(std::string layoutOfPotential
     }
   else
     {
-      throw std::invalid_argument("You did not select one of the possible layout selections for the potential!");
+    
+      
 				  
     }
 
@@ -74,18 +77,6 @@ void memory::Domain::printPotentialValues()
 {
 
   int cellNr;
-
-  /*
-  for( int y=0; y<(_totalSizeY+2); y++){
-    for( int x=0; x<(_totalSizeX+2); x++){
-
-      cellNr = ((y * _totalSizeX )+ x);
-      
-      std::cout << (_cellMatrix.at( cellNr ) ).getPotential() << " : ";
-    }
-    std::cout << "\n";
-  }
-  */
 
   for(int i=0;i<((_totalSizeX+2) * (_totalSizeY+2));i++)
     {

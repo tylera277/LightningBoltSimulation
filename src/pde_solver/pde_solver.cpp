@@ -21,9 +21,12 @@
 #include "../memory/domain.hpp"
 #include "../simulation_defines.hpp"
 
+#include "../../spdlog/spdlog.h"
+#include "../../spdlog/sinks/basic_file_sink.h"
 
 using namespace LBSIM;
 
+auto logger = spdlog::basic_logger_mt("pde_solver_logger", simParams::outputErrorFile);
 
 // Constructor
 solver::PDE_Solver::PDE_Solver(memory::Domain domain,
@@ -55,7 +58,7 @@ void solver::PDE_Solver::pde_solver(){
   double delta = 1;
   double potentialCenter, newPotentialCenter;
   double potentialTop, potentialBot, potentialLeft, potentialRight;
-  
+
   while(delta > simParams::ceaseCondition){
     delta = 0;
     
@@ -83,16 +86,9 @@ void solver::PDE_Solver::pde_solver(){
 	      }
 	    catch(const std::exception& e)
 	      {
-		std::cout << "Exception occurred: " << e.what() << std::endl;
-		
-		try {
-		  std::rethrow_exception(std::current_exception());
-		}
-		catch (const std::exception& innerException) {
-		  std::cout << "Exception thrown at: " << __FILE__ << ":" << __LINE__ << std::endl;
-		  std::terminate();
-		}
-	      }
+          logger->error("[{}:{}] {}",__FILE__, __LINE__, "ERROR IN CALCULATING POTENTIAL" );
+          break;
+        }
 
 	
 	    std::vector<double> arrayPotential = {potentialTop, potentialBot,

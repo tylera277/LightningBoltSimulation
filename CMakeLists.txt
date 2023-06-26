@@ -5,6 +5,7 @@ project(lightning_bolt)
 
 set(CMAKE_CXX_STANDARD 11)
 
+find_package(spdlog REQUIRED)
 
 include_directories(src)
 
@@ -21,3 +22,4 @@ add_subdirectory(test)
 
 target_link_libraries(lightning_bolt PUBLIC pde_solver)
 target_link_libraries(lightning_bolt PUBLIC memory)
+target_link_libraries(lightning_bolt PUBLIC spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>)

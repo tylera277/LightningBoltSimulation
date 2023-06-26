@@ -2,7 +2,8 @@
 
 
 #include "cell.hpp"
-
+#include "../../spdlog/spdlog.h"
+#include "../../spdlog/sinks/basic_file_sink.h"
 
 
 using namespace LBSIM;
